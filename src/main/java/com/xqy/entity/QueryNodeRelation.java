@@ -3,6 +3,7 @@ package com.xqy.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.xqy.enums.RelationType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -35,5 +36,5 @@ public class QueryNodeRelation extends BaseEntity {
     /**
      * 关系类型 (父/子/兄弟)
      */
-    private String relationType;
+    private RelationType relationType;
 }

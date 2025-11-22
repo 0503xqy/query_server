@@ -246,7 +246,7 @@ public class DynamicApiServiceImpl implements DynamicApiService {
             List<QueryNode> queryNodes = queryNodeService.list(wrapper);
 
             if (queryNodes.isEmpty()) {
-                log.warn("API {} 未配置查询节点", apiInfo.getApiName());
+                log.warn("List API {} 未配置查询节点", apiInfo.getApiName());
                 return List.of();
             }
 

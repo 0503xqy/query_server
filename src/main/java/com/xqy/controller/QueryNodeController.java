@@ -2,10 +2,13 @@ package com.xqy.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xqy.common.Result;
+import com.xqy.dto.QueryNodeTreeDto;
 import com.xqy.entity.QueryNode;
 import com.xqy.service.QueryNodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 查询节点控制器
@@ -61,5 +64,32 @@ public class QueryNodeController {
     public Result<Void> delete(@PathVariable Integer id) {
         queryNodeService.removeById(id);
         return Result.success();
+    }
+
+    /**
+     * 根据根节点ID构建执行树
+     */
+    @GetMapping("/tree/{rootNodeId}")
+    public Result<QueryNodeTreeDto> buildExecutionTree(@PathVariable Integer rootNodeId) {
+        QueryNodeTreeDto tree = queryNodeService.buildExecutionTree(rootNodeId);
+        return Result.success(tree);
+    }
+
+    /**
+     * 获取节点的子节点
+     */
+    @GetMapping("/children/{nodeId}")
+    public Result<List<QueryNodeTreeDto>> getChildren(@PathVariable Integer nodeId) {
+        List<QueryNodeTreeDto> children = queryNodeService.getNodeChildren(nodeId);
+        return Result.success(children);
+    }
+
+    /**
+     * 获取执行顺序
+     */
+    @GetMapping("/execution-order/{rootNodeId}")
+    public Result<List<QueryNode>> getExecutionOrder(@PathVariable Integer rootNodeId) {
+        List<QueryNode> executionOrder = queryNodeService.getExecutionOrder(rootNodeId);
+        return Result.success(executionOrder);
     }
 }
