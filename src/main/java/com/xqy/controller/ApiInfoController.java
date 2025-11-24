@@ -90,7 +90,7 @@ public class ApiInfoController {
      * 更新指定ID的API配置并重新加载动态API
      */
     @PostMapping("/publish/{id}")
-    public Result<Void> publish(@PathVariable Integer id, @RequestBody ApiInfo apiInfo) {
+    public Result<Void> publish(@PathVariable Long id, @RequestBody ApiInfo apiInfo) {
         // 设置ID
         apiInfo.setId(id);
         

@@ -61,7 +61,7 @@ public class QueryNodeController {
      * 删除
      */
     @DeleteMapping("/{id}")
-    public Result<Void> delete(@PathVariable Integer id) {
+    public Result<Void> delete(@PathVariable Long id) {
         queryNodeService.removeById(id);
         return Result.success();
     }
@@ -70,7 +70,7 @@ public class QueryNodeController {
      * 根据根节点ID构建执行树
      */
     @GetMapping("/tree/{rootNodeId}")
-    public Result<QueryNodeTreeDto> buildExecutionTree(@PathVariable Integer rootNodeId) {
+    public Result<QueryNodeTreeDto> buildExecutionTree(@PathVariable Long rootNodeId) {
         QueryNodeTreeDto tree = queryNodeService.buildExecutionTree(rootNodeId);
         return Result.success(tree);
     }
@@ -79,7 +79,7 @@ public class QueryNodeController {
      * 获取节点的子节点
      */
     @GetMapping("/children/{nodeId}")
-    public Result<List<QueryNodeTreeDto>> getChildren(@PathVariable Integer nodeId) {
+    public Result<List<QueryNodeTreeDto>> getChildren(@PathVariable Long nodeId) {
         List<QueryNodeTreeDto> children = queryNodeService.getNodeChildren(nodeId);
         return Result.success(children);
     }
@@ -88,7 +88,7 @@ public class QueryNodeController {
      * 获取执行顺序
      */
     @GetMapping("/execution-order/{rootNodeId}")
-    public Result<List<QueryNode>> getExecutionOrder(@PathVariable Integer rootNodeId) {
+    public Result<List<QueryNode>> getExecutionOrder(@PathVariable Long rootNodeId) {
         List<QueryNode> executionOrder = queryNodeService.getExecutionOrder(rootNodeId);
         return Result.success(executionOrder);
     }

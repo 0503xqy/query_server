@@ -3,8 +3,12 @@ package com.xqy.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.xqy.enums.ApiType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serial;
 
 /**
  * API信息实体类
@@ -14,18 +18,21 @@ import lombok.EqualsAndHashCode;
 @TableName("api_info")
 public class ApiInfo extends BaseEntity {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
      * 主键ID
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long id;
 
     /**
      * 所属分组ID
      */
-    private Integer groupId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long groupId;
 
     /**
      * API名称
@@ -45,12 +52,13 @@ public class ApiInfo extends BaseEntity {
     /**
      * API类型 (分页/列表/对象)
      */
-    private String apiType;
+    private ApiType apiType;
 
     /**
      * 根查询节点ID
      */
-    private String rootQueryNodeId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long rootQueryNodeId;
 
     /**
      * API描述

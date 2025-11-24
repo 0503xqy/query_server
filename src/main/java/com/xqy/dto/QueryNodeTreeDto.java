@@ -1,8 +1,10 @@
 package com.xqy.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.xqy.enums.RelationType;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,12 +16,14 @@ import java.util.List;
 @Data
 public class QueryNodeTreeDto implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
      * 节点ID
      */
-    private Integer id;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long id;
 
     /**
      * 节点名称
@@ -52,11 +56,6 @@ public class QueryNodeTreeDto implements Serializable {
     private Integer dataSourceId;
 
     /**
-     * 数据源名称
-     */
-    private String dataSourceName;
-
-    /**
      * 节点描述
      */
     private String nodeDescription;
@@ -64,12 +63,17 @@ public class QueryNodeTreeDto implements Serializable {
     /**
      * 父节点ID
      */
-    private Integer parentId;
+    private Long parentId;
 
     /**
      * 关系类型 (父/子/兄弟)
      */
     private RelationType relationType;
+
+    /**
+     * 绑定名称
+     */
+    private String bindingName;
 
     /**
      * 子节点列表

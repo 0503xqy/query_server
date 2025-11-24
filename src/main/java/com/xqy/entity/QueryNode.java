@@ -3,6 +3,9 @@ package com.xqy.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.xqy.enums.QueryNodeType;
+import com.xqy.enums.RelationType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -23,7 +26,25 @@ public class QueryNode extends BaseEntity {
      * 主键ID
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long id;
+
+    /**
+     * 父节点ID
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long parentId;
+
+    /**
+     * 关系类型 (父/子/兄弟)
+     */
+    private RelationType relationType;
+
+    /**
+     * 绑定名称
+     */
+    private String bindingName;
+
 
     /**
      * 节点名称
@@ -33,7 +54,7 @@ public class QueryNode extends BaseEntity {
     /**
      * 节点类型 (多行/单行/单列/单值)
      */
-    private String nodeType;
+    private QueryNodeType queryNodeType;
 
     /**
      * SQL内容

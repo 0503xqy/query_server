@@ -1,8 +1,11 @@
 package com.xqy.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.xqy.dto.QueryNodeTreeDto;
 import com.xqy.entity.ApiInfo;
 import com.xqy.entity.QueryNode;
+import com.xqy.enums.ApiType;
+import com.xqy.enums.QueryNodeType;
 import com.xqy.service.ApiInfoService;
 import com.xqy.service.DynamicApiService;
 import com.xqy.service.DynamicDataSourceExecutor;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -146,14 +150,18 @@ public class DynamicApiServiceImpl implements DynamicApiService {
      * 创建API处理器
      */
     private ApiHandler createApiHandler(ApiInfo apiInfo) {
-        String apiType = apiInfo.getApiType();
-        
+        ApiType apiType = apiInfo.getApiType();
+
+        if (apiType == null) {
+            log.warn("API类型为空: {}", apiInfo.getApiName());
+            throw new RuntimeException("API类型为空: " + apiInfo.getApiName());
+        }
+
         // 根据API类型创建不同的处理器
         return switch (apiType) {
-            case "分页" -> new PageApiHandler(apiInfo, queryNodeService, dataSourceExecutor);
-            case "列表" -> new ListApiHandler(apiInfo, queryNodeService, dataSourceExecutor);
-            case "对象" -> new ObjectApiHandler(apiInfo, queryNodeService, dataSourceExecutor);
-            default -> throw new RuntimeException("不支持的API类型: " + apiType);
+            case PAGE -> new PageApiHandler(apiInfo, queryNodeService, dataSourceExecutor);
+            case LIST -> new ListApiHandler(apiInfo, queryNodeService, dataSourceExecutor);
+            case MAP -> new ObjectApiHandler(apiInfo, queryNodeService, dataSourceExecutor);
         };
     }
 
@@ -240,20 +248,16 @@ public class DynamicApiServiceImpl implements DynamicApiService {
         public Object handle(Map<String, Object> params, HttpServletRequest request) {
             log.info("执行列表API: {}", apiInfo.getApiName());
 
-            // TODO: 这里需要根据apiInfo.getId()查询关联的QueryNode
-            LambdaQueryWrapper<QueryNode> wrapper = new LambdaQueryWrapper<>();
-            // wrapper.eq(QueryNode::getApiId, apiInfo.getId()); // 需要在QueryNode中添加apiId字段
-            List<QueryNode> queryNodes = queryNodeService.list(wrapper);
+            QueryNodeTreeDto queryNodeTreeDto = queryNodeService.buildExecutionTree(apiInfo.getRootQueryNodeId());
 
-            if (queryNodes.isEmpty()) {
+            if (Objects.isNull(queryNodeTreeDto)) {
                 log.warn("List API {} 未配置查询节点", apiInfo.getApiName());
                 return List.of();
             }
 
             try {
-                QueryNode queryNode = queryNodes.get(0);
-                String sql = queryNode.getSqlContent();
-                Integer dataSourceId = queryNode.getDataSourceId();
+                String sql = queryNodeTreeDto.getSqlContent();
+                Integer dataSourceId = queryNodeTreeDto.getDataSourceId();
 
                 // 执行查询 - 返回多行结果
                 return dataSourceExecutor.executeQueryForList(dataSourceId, sql, params);
@@ -289,18 +293,18 @@ public class DynamicApiServiceImpl implements DynamicApiService {
                 QueryNode queryNode = queryNodes.get(0);
                 String sql = queryNode.getSqlContent();
                 Integer dataSourceId = queryNode.getDataSourceId();
-                String nodeType = queryNode.getNodeType();
+                QueryNodeType nodeType = queryNode.getQueryNodeType();
 
                 // 根据节点类型执行不同的查询
                 return switch (nodeType) {
-                    case "单行" -> dataSourceExecutor.executeQueryForMap(dataSourceId, sql, params);
-                    case "单值" -> {
+                    case ROWS -> dataSourceExecutor.executeQueryForList(dataSourceId, sql, params);
+                    case VALUE -> {
                         Object value = dataSourceExecutor.executeQueryForObject(dataSourceId, sql, params);
                         Map<String, Object> result = new HashMap<>();
                         result.put("value", value);
                         yield result;
                     }
-                    case "单列" -> {
+                    case COLUMN -> {
                         List<Map<String, Object>> list = dataSourceExecutor.executeQueryForList(dataSourceId, sql, params);
                         // 提取第一列的值
                         List<Object> column = list.stream()
