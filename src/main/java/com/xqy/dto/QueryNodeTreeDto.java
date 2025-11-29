@@ -1,6 +1,7 @@
 package com.xqy.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.xqy.enums.QueryNodeType;
 import com.xqy.enums.RelationType;
 import lombok.Data;
 
@@ -33,7 +34,7 @@ public class QueryNodeTreeDto implements Serializable {
     /**
      * 节点类型 (多行/单行/单列/单值)
      */
-    private String nodeType;
+    private QueryNodeType nodeType;
 
     /**
      * SQL内容
