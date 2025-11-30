@@ -59,6 +59,12 @@ public class QueryNodeServiceImpl extends ServiceImpl<QueryNodeMapper, QueryNode
 
         rootDtoList.forEach(rootDto -> {
             List<QueryNodeTreeDto> children = buildExecutionTree(rootDto.getId(), false, rootDto.getLevel() + 1);
+            if (!CollectionUtils.isEmpty(children)){
+                rootDto.setHasChildren(true);
+            } else {
+                rootDto.setHasChildren(false);
+            }
+            rootDto.setChildrenList(children);
         });
 
         // 递归构建子节点

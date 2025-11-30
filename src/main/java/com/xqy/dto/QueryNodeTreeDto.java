@@ -7,7 +7,6 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -34,7 +33,7 @@ public class QueryNodeTreeDto implements Serializable {
     /**
      * 节点类型 (多行/单行/单列/单值)
      */
-    private QueryNodeType nodeType;
+    private QueryNodeType queryNodeType;
 
     /**
      * SQL内容

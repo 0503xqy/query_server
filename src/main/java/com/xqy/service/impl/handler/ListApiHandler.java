@@ -7,6 +7,7 @@ import com.xqy.service.DynamicDataSourceExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,7 +25,9 @@ public record ListApiHandler() implements ApiHandler {
             String sql = queryNode.getSqlContent();
             Integer dataSourceId = queryNode.getDataSourceId();
             // 执行查询 - 返回多行结果
-            return dataSourceExecutor.executeQueryForList(dataSourceId, sql, params);
+            List<Map<String, Object>> list = dataSourceExecutor.executeQueryForList(dataSourceId, sql, params);
+            NodeExecutor.execute(list, queryNode, dataSourceExecutor, params);
+            return list;
 
         } catch (Exception e) {
             log.error("列表查询执行失败", e);

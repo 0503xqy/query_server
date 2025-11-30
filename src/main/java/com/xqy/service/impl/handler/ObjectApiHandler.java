@@ -25,29 +25,8 @@ public record ObjectApiHandler() implements ApiHandler {
         try {
             String sql = queryNode.getSqlContent();
             Integer dataSourceId = queryNode.getDataSourceId();
-            QueryNodeType nodeType = queryNode.getNodeType();
-
             // 根据节点类型执行不同的查询
-            return switch (nodeType) {
-                case ROWS -> dataSourceExecutor.executeQueryForList(dataSourceId, sql, params);
-                case VALUE -> {
-                    Object value = dataSourceExecutor.executeQueryForObject(dataSourceId, sql, params);
-                    Map<String, Object> result = new HashMap<>();
-                    result.put("value", value);
-                    yield result;
-                }
-                case COLUMN -> {
-                    List<Map<String, Object>> list = dataSourceExecutor.executeQueryForList(dataSourceId, sql, params);
-                    // 提取第一列的值
-                    List<Object> column = list.stream()
-                            .map(row -> row.values().iterator().next())
-                            .toList();
-                    Map<String, Object> result = new HashMap<>();
-                    result.put("values", column);
-                    yield result;
-                }
-                default -> dataSourceExecutor.executeQueryForMap(dataSourceId, sql, params);
-            };
+            return dataSourceExecutor.executeQueryForMap(dataSourceId, sql, params);
 
         } catch (Exception e) {
             log.error("对象查询执行失败", e);
